@@ -12,8 +12,6 @@ int mov1, mov2, mov3, mov4, mov5, mov6, mov7, mov8, mov9;
 
 double varB,varS;
 
-double meristop=0.005000;
-
 bool buy=false;
 bool sell=false;
 
@@ -221,9 +219,10 @@ void OnTick()
             double dif;
 
             dif= openp-bidp;
-
-            if(dif>meristop)
+            
+            if(dif>0.00400)
               {
+
                CloseOrder();
               }
             else
@@ -256,8 +255,8 @@ void OnTick()
 
                double dift;
                dift= opent-bidt;
-
-               if(1-dift>(1+meristop))
+               
+               if(dift<-0.0040)
                  {
 
                   CloseOrder();
