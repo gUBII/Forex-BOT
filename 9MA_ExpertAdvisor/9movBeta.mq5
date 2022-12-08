@@ -10,6 +10,7 @@
 
 int mov1, mov2, mov3, mov4, mov5, mov6, mov7, mov8, mov9;
 
+double varB,varS;
 
 bool buy=false;
 bool sell=false;
@@ -153,6 +154,7 @@ void OnTick()
                  {
                   myrequest.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzsell, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest.price);
                   OrderSend(myrequest,myresult);
+                  varS=myrequest.price;
                   sell=true;
                  }
                else
@@ -166,6 +168,7 @@ void OnTick()
                     {
                      myrequest1.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzbuy, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest1.price);
                      OrderSend(myrequest1,myresult1);
+                     varB=myrequest1.price;
                      buy=true;
                     }
                   else
@@ -210,7 +213,7 @@ void OnTick()
          if(buy==true || sell==false)
            {
 
-            double openp = iOpen(_Symbol,PERIOD_CURRENT,1);
+            double openp = varB;
             double bidp = SymbolInfoDouble(_Symbol,SYMBOL_BID);
 
             double dif;
@@ -247,7 +250,7 @@ void OnTick()
             if(sell==true || buy==false)
               {
 
-               double opent = iOpen(_Symbol,PERIOD_CURRENT,1);
+               double opent = varS;
                double bidt = SymbolInfoDouble(_Symbol,SYMBOL_BID);
 
                double dift;
