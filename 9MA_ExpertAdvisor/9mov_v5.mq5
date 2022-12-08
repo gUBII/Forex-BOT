@@ -11,8 +11,8 @@
 int mov1, mov2, mov3, mov4, mov5, mov6, mov7, mov8, mov9;
 
 
-bool buy=false;
-bool sell=false;
+ bool buy=false;
+ bool sell=false;
 
 int barsTotal;
 static double riskpercentage=0.1;
@@ -113,10 +113,10 @@ void OnTick()
       myrequest.price = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
       myrequest.tp = 0 ;
       myrequest.deviation = ULONG_MAX;
-
+      
       double stopzsell = iHigh(_Symbol,PERIOD_CURRENT,HighestCandleM5);
-
-
+      
+      
       //mqltrade buy operation (still working)
 
 
@@ -132,13 +132,13 @@ void OnTick()
       myrequest1.price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
       myrequest1.tp = 0 ;
       myrequest1.deviation = ULONG_MAX;
-
+      
       double stopzbuy = iLow(_Symbol,PERIOD_CURRENT,LowestCandleM5);
-
-
-
-
-
+      
+     
+     
+      
+     
 
 
       if(!PositionSelect(_Symbol))
@@ -151,7 +151,7 @@ void OnTick()
               {
                if((amov1[5] > amov2[5] && amov2[5] > amov3[5] && amov3[5] > amov4[5] &&  amov4[5] > amov5[5] && amov5[5] > amov6[5] && amov6[5] > amov7[5] && amov7[5] > amov8[5] && amov8[5] > amov9[5]))
                  {
-                  myrequest.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzsell, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest.price);
+                   myrequest.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzsell, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest.price);
                   OrderSend(myrequest,myresult);
                   sell=true;
                  }
@@ -191,47 +191,15 @@ void OnTick()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
       if(PositionSelect(_Symbol))
         {
 
          if(buy==true || sell==false)
            {
 
-            double openp = iOpen(_Symbol,PERIOD_CURRENT,1);
-            double bidp = SymbolInfoDouble(_Symbol,SYMBOL_BID);
-
-            double dif;
-
-            dif= openp-bidp;
-            
-            if(dif>0.00400)
-              {
-
-               CloseOrder();
-              }
-            else
-              {
-
-
-              }
-
-
             if(amov8[15]<amov5[15] && amov5[13]<amov8[13])
               {
-
+               
                CloseOrder();
                buy=false;
 
@@ -246,23 +214,6 @@ void OnTick()
          else
             if(sell==true || buy==false)
               {
-
-               double opent = iOpen(_Symbol,PERIOD_CURRENT,1);
-               double bidt = SymbolInfoDouble(_Symbol,SYMBOL_BID);
-
-               double dift;
-               dift= opent-bidt;
-               
-               if(dift<-0.0040)
-                 {
-
-                  CloseOrder();
-                 }
-               else
-                 {
-
-                 }
-
 
                if(amov8[15]>amov5[15] && amov5[13]>amov8[13])
                  {
@@ -352,12 +303,12 @@ double volumeGen(double accbalance, double riskperc, double openprice, double st
    riskcap = accbalance * riskperc;
 
    deltaprice = MathAbs(openprice - stoploss)*revisecont;
-
+   
 
    pdev=(0.00001 / currprice) * contractsize*100;
-
+   
    magi= deltaprice*pdev;
-
+   
    vol= riskcap /magi;
 
    double roundval=round(vol*100)/100;
