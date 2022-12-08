@@ -4,16 +4,18 @@
 //|                                       http://www.companyname.net |
 //+------------------------------------------------------------------+
 
+
 #property copyright "Farhan Rashid"
 #include <Trade\Trade.mqh>
 
 int mov1, mov2, mov3, mov4, mov5, mov6, mov7, mov8, mov9;
 
 
-static bool buy=false;
-static bool sell=false;
+ bool buy=false;
+ bool sell=false;
 
 int barsTotal;
+static double riskpercentage=0.1;
 
 
 //+------------------------------------------------------------------+
@@ -23,15 +25,15 @@ int OnInit()
   {
    barsTotal = iBars(_Symbol,PERIOD_CURRENT);
 // show it on contemporary chart
-   mov1 = iMA(NULL, PERIOD_CURRENT,8,0,MODE_EMA,PRICE_CLOSE);
-   mov2 = iMA(NULL, PERIOD_CURRENT,14,0,MODE_EMA,PRICE_CLOSE);
-   mov3 = iMA(NULL, PERIOD_CURRENT,20,0,MODE_EMA,PRICE_CLOSE);
-   mov4 = iMA(NULL, PERIOD_CURRENT,26,0,MODE_EMA,PRICE_CLOSE);
-   mov5 = iMA(NULL, PERIOD_CURRENT,32,0,MODE_EMA,PRICE_CLOSE);
-   mov6 = iMA(NULL, PERIOD_CURRENT,38,0,MODE_EMA,PRICE_CLOSE);
-   mov7 = iMA(NULL, PERIOD_CURRENT,44,0,MODE_EMA,PRICE_CLOSE);
-   mov8 = iMA(NULL, PERIOD_CURRENT,50,0,MODE_EMA,PRICE_CLOSE);
-   mov9 = iMA(NULL, PERIOD_CURRENT,56,0,MODE_EMA,PRICE_CLOSE);
+   mov1 = iMA(_Symbol, PERIOD_CURRENT,8,0,MODE_SMMA,PRICE_CLOSE);
+   mov2 = iMA(_Symbol, PERIOD_CURRENT,14,0,MODE_SMMA,PRICE_CLOSE);
+   mov3 = iMA(_Symbol, PERIOD_CURRENT,20,0,MODE_SMMA,PRICE_CLOSE);
+   mov4 = iMA(_Symbol, PERIOD_CURRENT,26,0,MODE_SMMA,PRICE_CLOSE);
+   mov5 = iMA(_Symbol, PERIOD_CURRENT,46,0,MODE_SMMA,PRICE_CLOSE);
+   mov6 = iMA(_Symbol, PERIOD_CURRENT,66,0,MODE_SMMA,PRICE_CLOSE);
+   mov7 = iMA(_Symbol, PERIOD_CURRENT,72,0,MODE_SMMA,PRICE_CLOSE);
+   mov8 = iMA(_Symbol, PERIOD_CURRENT,78,0,MODE_SMMA,PRICE_CLOSE);
+   mov9 = iMA(_Symbol, PERIOD_CURRENT,84,0,MODE_SMMA,PRICE_CLOSE);
 
 
    return(INIT_SUCCEEDED);
@@ -86,39 +88,39 @@ void OnTick()
       double amov9[];
 
       //input stream for the moving average
-      CopyBuffer(mov1, MAIN_LINE, 1, 14, amov1);
-      CopyBuffer(mov2, MAIN_LINE, 1, 14, amov2);
-      CopyBuffer(mov3, MAIN_LINE, 1, 14, amov3);
-      CopyBuffer(mov4, MAIN_LINE, 1, 14, amov4);
-      CopyBuffer(mov5, MAIN_LINE, 1, 14, amov5);
-      CopyBuffer(mov6, MAIN_LINE, 1, 14, amov6);
-      CopyBuffer(mov7, MAIN_LINE, 1, 14, amov7);
-      CopyBuffer(mov8, MAIN_LINE, 1, 14, amov8);
-      CopyBuffer(mov9, MAIN_LINE, 1, 14, amov9);
+      CopyBuffer(mov1, MAIN_LINE, 1, 16, amov1);
+      CopyBuffer(mov2, MAIN_LINE, 1, 16, amov2);
+      CopyBuffer(mov3, MAIN_LINE, 1, 16, amov3);
+      CopyBuffer(mov4, MAIN_LINE, 1, 16, amov4);
+      CopyBuffer(mov5, MAIN_LINE, 1, 16, amov5);
+      CopyBuffer(mov6, MAIN_LINE, 1, 16, amov6);
+      CopyBuffer(mov7, MAIN_LINE, 1, 16, amov7);
+      CopyBuffer(mov8, MAIN_LINE, 1, 16, amov8);
+      CopyBuffer(mov9, MAIN_LINE, 1, 16, amov9);
       //last two close price
       double close1 = iClose(_Symbol,PERIOD_CURRENT,1);
       double close2 = iClose(_Symbol,PERIOD_CURRENT,2);
-
-
-
 
 
       //mqltrade sell operation
       MqlTradeRequest myrequest;
       MqlTradeResult myresult;
       ZeroMemory(myrequest);
-      ZeroMemory(myresult);
       myrequest.action = TRADE_ACTION_DEAL;
       myrequest.type = ORDER_TYPE_SELL;
       myrequest.symbol = _Symbol;
-      myrequest.volume = 0.20;
       myrequest.type_filling = ORDER_FILLING_FOK;
       myrequest.price = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
       myrequest.tp = 0 ;
       myrequest.deviation = ULONG_MAX;
-      //myrequest.sl = iHigh(_Symbol,PERIOD_CURRENT,HighestCandleM5);
-
+      
+      double stopzsell = iHigh(_Symbol,PERIOD_CURRENT,HighestCandleM5);
+      
+      
       //mqltrade buy operation (still working)
+
+
+
       MqlTradeRequest myrequest1;
       MqlTradeResult myresult1;
       ZeroMemory(myrequest1);
@@ -126,87 +128,66 @@ void OnTick()
       myrequest1.action = TRADE_ACTION_DEAL;
       myrequest1.type = ORDER_TYPE_BUY;
       myrequest1.symbol = _Symbol;
-      myrequest1.volume = 0.20;
       myrequest1.type_filling = ORDER_FILLING_FOK;
       myrequest1.price = SymbolInfoDouble(_Symbol, SYMBOL_BID);
       myrequest1.tp = 0 ;
       myrequest1.deviation = ULONG_MAX;
-      //myrequest1.sl = iLow(_Symbol,PERIOD_CURRENT,LowestCandleM5);
-
-
-      bool btntrade,begintrade;
-      int b=7;
+      
+      double stopzbuy = iLow(_Symbol,PERIOD_CURRENT,LowestCandleM5);
+      
      
-//
-//         if(amov1[1] < amov2[1] && amov2[1] < amov3[1] && amov3[1] < amov4[1] && amov4[1] < amov5[1] && amov5[1] < amov6[1] && amov6[1] < amov7[1] && amov7[1] < amov8[1] && amov8[1] < amov9[1]
-//            || amov1[1] > amov2[1] && amov2[1] > amov3[1] && amov3[1] > amov4[1] && amov4[1] > amov5[1] && amov5[1] > amov6[1] && amov6[1] > amov7[1] && amov7[1] > amov8[1] && amov8[1] > amov9[1])
-//           {
-            if(!PositionSelect(_Symbol))
+     
+      
+     
+
+
+      if(!PositionSelect(_Symbol))
+        {
+
+         if((amov1[15] < amov2[15] && amov2[15] < amov3[15] && amov3[15] < amov4[15] &&  amov4[15] < amov5[15] && amov5[15] > amov6[15] && amov6[15] > amov7[15] && amov7[15] > amov8[15] && amov8[15] > amov9[15])
+            || (amov1[15] > amov2[15] && amov2[15] > amov3[15] && amov3[15] > amov4[15] &&  amov4[15] > amov5[15] && amov5[15] < amov6[15] && amov6[15] < amov7[15] && amov7[15] < amov8[15] && amov8[15] < amov9[15]))
+           {
+            if(amov1[15] < amov2[15] && amov2[15] < amov3[15] && amov3[15] < amov4[15] &&  amov4[15] < amov5[15] && amov5[15] > amov6[15] && amov6[15] > amov7[15] && amov7[15] > amov8[15] && amov8[15] > amov9[15])
               {
-
-               if(amov1[1] < amov2[1] && amov2[1] < amov3[1] && amov3[1] < amov4[1] &&  amov4[1] < amov5[1] && amov5[1] > amov6[1] && amov6[1] > amov7[1] && amov7[1] > amov8[1] && amov8[1] > amov9[1]
-                  || amov1[1] > amov2[1] && amov2[1] > amov3[1] && amov3[1] > amov4[1] &&  amov4[1] > amov5[1] && amov5[1] < amov6[1] && amov6[1] < amov7[1] && amov7[1] < amov8[1] && amov8[1] < amov9[1])
+               if((amov1[5] > amov2[5] && amov2[5] > amov3[5] && amov3[5] > amov4[5] &&  amov4[5] > amov5[5] && amov5[5] > amov6[5] && amov6[5] > amov7[5] && amov7[5] > amov8[5] && amov8[5] > amov9[5]))
                  {
-                  if(amov1[1] < amov2[1] && amov2[1] < amov3[1] && amov3[1] < amov4[1] &&  amov4[1] < amov5[1] && amov5[1] > amov6[1] && amov6[1] > amov7[1] && amov7[1] > amov8[1] && amov8[1] > amov9[1])
+                   myrequest.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzsell, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest.price);
+                  OrderSend(myrequest,myresult);
+                  sell=true;
+                 }
+               else
+                 {
+                 }
+              }
+            else
+               if(amov1[15] > amov2[15] && amov2[15] > amov3[15] && amov3[15] > amov4[15] &&  amov4[15] > amov5[15] && amov5[15] < amov6[15] && amov6[15] < amov7[15] && amov7[15] < amov8[15] && amov8[15] < amov9[15])
+                 {
+                  if((amov1[5] < amov2[5] && amov2[5] < amov3[5] && amov3[5] < amov4[5] &&  amov4[5] < amov5[5] && amov5[5] < amov6[5] && amov6[5] < amov7[5] && amov7[5] < amov8[5] && amov8[5] < amov9[5]))
                     {
-                     
-                     if(amov1[b] > amov2[b] && amov2[b] > amov3[b] && amov3[b] > amov4[b] &&  amov4[b] > amov5[b] && amov5[b] > amov6[b] && amov6[b] > amov7[b] && amov7[b] > amov8[b] && amov8[b] > amov9[b]){
-                     
-                     OrderSend(myrequest,myresult);
-                     
-                     sell=true;
-                     
-                     } else {
-                     
-                     
-                     }
-                     
-
+                     myrequest1.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzbuy, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest1.price);
+                     OrderSend(myrequest1,myresult1);
+                     buy=true;
                     }
                   else
-                     if(amov1[1] > amov2[1] && amov2[1] > amov3[1] && amov3[1] > amov4[1] &&  amov4[1] > amov5[1] && amov5[1] < amov6[1] && amov6[1] < amov7[1] && amov7[1] < amov8[1] && amov8[1] < amov9[1])
-                       {
+                    {
+                    }
+                 }
+               else
+                 {
 
-                        if(amov1[b] < amov2[b] && amov2[b] < amov3[b] && amov3[b] < amov4[b] &&  amov4[b] < amov5[b] && amov5[b] < amov6[b] && amov6[b] < amov7[b] && amov7[b] < amov8[b] && amov8[b] < amov9[b]){
-                        
-                        OrderSend(myrequest1,myresult1);
-                      
-                        buy=true;
-                        
-                        } else {
-                        
-                        
-                        }
-                        
-
-                       }
-                     else
-                       {
-
-
-                       }
 
                  }
 
-              }
-            else
-              {
+           }
+
+        }
+      else
+        {
 
 
 
 
-              }
-
-
-//           }
-//         else
-//           {
-//
-//
-//
-//           }
-
-        
+        }
 
 
 
@@ -216,9 +197,9 @@ void OnTick()
          if(buy==true || sell==false)
            {
 
-            if(amov1[1]<amov3[1])
+            if(amov8[15]<amov5[15] && amov5[13]<amov8[13])
               {
-
+               
                CloseOrder();
                buy=false;
 
@@ -234,7 +215,7 @@ void OnTick()
             if(sell==true || buy==false)
               {
 
-               if(amov1[1]>amov3[1])
+               if(amov8[15]>amov5[15] && amov5[13]>amov8[13])
                  {
 
                   CloseOrder();
@@ -271,7 +252,7 @@ void OnTick()
               ,"| MA1:",DoubleToString(amov2[1],_Digits)
               ,"\nMA3:", DoubleToString(amov3[1],_Digits)
               ,"| MA4",DoubleToString(amov4[1],_Digits)
-              ,"\MA5:", DoubleToString(amov5[1],_Digits)
+              ,"\nMA5:", DoubleToString(amov5[1],_Digits)
               ,"|MA6:",DoubleToString(amov6[1],_Digits)
               ,"\nMA7:", DoubleToString(amov7[1],_Digits)
               ,"|MA8:",DoubleToString(amov8[1],_Digits)
@@ -303,6 +284,38 @@ void CloseOrder()
          i--;
      }
   }
+
+
+
+//+------------------------------------------------------------------+
+//|                                                                  |
+//+------------------------------------------------------------------+
+double volumeGen(double accbalance, double riskperc, double openprice, double stoploss, double contractsize, double currprice)
+  {
+
+   double vol=0;
+   double deltaprice=0;
+   double pdev=0;
+   double riskcap=0;
+   double magi=0;
+   double revisecont=contractsize/10;
+
+   riskcap = accbalance * riskperc;
+
+   deltaprice = MathAbs(openprice - stoploss)*revisecont;
+   
+
+   pdev=(0.00001 / currprice) * contractsize*100;
+   
+   magi= deltaprice*pdev;
+   
+   vol= riskcap /magi;
+
+   double roundval=round(vol*100)/100;
+   return roundval;
+  }
+
+
 
 
 //+------------------------------------------------------------------+
