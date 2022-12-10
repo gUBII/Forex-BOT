@@ -12,13 +12,13 @@ int mov1, mov2, mov3, mov4, mov5, mov6, mov7, mov8, mov9;
 
 double varB,varS;
 
-double meristop=0.005000;
+double meristop=0.00500;
 
 bool buy=false;
 bool sell=false;
 
 int barsTotal;
-static double riskpercentage=0.1;
+static double riskpercentage=0.02;
 
 
 //+------------------------------------------------------------------+
@@ -59,6 +59,9 @@ void OnDeinit(const int reason)
 void OnTick()
   {
 
+   double Equity;
+   double Balance;
+   double Limit;
 
    int HighestCandleM5,LowestCandleM5;
    double High[],Low[];
@@ -68,11 +71,12 @@ void OnTick()
    CopyHigh(_Symbol,PERIOD_CURRENT,0,11,High);
    CopyLow(_Symbol,PERIOD_CURRENT,0,11,Low);
 
-   HighestCandleM5 = ArrayMaximum(High,0,11);
-   LowestCandleM5 = ArrayMinimum(Low,0,11);
+   HighestCandleM5 = ArrayMaximum(High,0,6);
+   LowestCandleM5 = ArrayMinimum(Low,0,6);
 
-
-
+   Equity=AccountInfoDouble(ACCOUNT_EQUITY);
+   Balance=AccountInfoDouble(ACCOUNT_BALANCE);
+   Limit=Balance*0.05;
 
 
    int bars = iBars(_Symbol,PERIOD_CURRENT);
@@ -91,15 +95,15 @@ void OnTick()
       double amov9[];
 
       //input stream for the moving average
-      CopyBuffer(mov1, MAIN_LINE, 1, 16, amov1);
-      CopyBuffer(mov2, MAIN_LINE, 1, 16, amov2);
-      CopyBuffer(mov3, MAIN_LINE, 1, 16, amov3);
-      CopyBuffer(mov4, MAIN_LINE, 1, 16, amov4);
-      CopyBuffer(mov5, MAIN_LINE, 1, 16, amov5);
-      CopyBuffer(mov6, MAIN_LINE, 1, 16, amov6);
-      CopyBuffer(mov7, MAIN_LINE, 1, 16, amov7);
-      CopyBuffer(mov8, MAIN_LINE, 1, 16, amov8);
-      CopyBuffer(mov9, MAIN_LINE, 1, 16, amov9);
+      CopyBuffer(mov1, MAIN_LINE, 1, 26, amov1);
+      CopyBuffer(mov2, MAIN_LINE, 1, 26, amov2);
+      CopyBuffer(mov3, MAIN_LINE, 1, 26, amov3);
+      CopyBuffer(mov4, MAIN_LINE, 1, 26, amov4);
+      CopyBuffer(mov5, MAIN_LINE, 1, 26, amov5);
+      CopyBuffer(mov6, MAIN_LINE, 1, 26, amov6);
+      CopyBuffer(mov7, MAIN_LINE, 1, 26, amov7);
+      CopyBuffer(mov8, MAIN_LINE, 1, 26, amov8);
+      CopyBuffer(mov9, MAIN_LINE, 1, 26, amov9);
       //last two close price
       double close1 = iClose(_Symbol,PERIOD_CURRENT,1);
       double close2 = iClose(_Symbol,PERIOD_CURRENT,2);
@@ -147,12 +151,13 @@ void OnTick()
       if(!PositionSelect(_Symbol))
         {
 
-         if((amov1[15] < amov2[15] && amov2[15] < amov3[15] && amov3[15] < amov4[15] &&  amov4[15] < amov5[15] && amov5[15] > amov6[15] && amov6[15] > amov7[15] && amov7[15] > amov8[15] && amov8[15] > amov9[15])
-            || (amov1[15] > amov2[15] && amov2[15] > amov3[15] && amov3[15] > amov4[15] &&  amov4[15] > amov5[15] && amov5[15] < amov6[15] && amov6[15] < amov7[15] && amov7[15] < amov8[15] && amov8[15] < amov9[15]))
+         if((amov1[25] < amov2[25] && amov2[25] < amov3[25] && amov3[25] < amov4[25] &&  amov4[25] < amov5[25] && amov5[25] > amov6[25] && amov6[25] > amov7[25] && amov7[25] > amov8[25] && amov8[25] > amov9[25])
+            || (amov1[25] > amov2[25] && amov2[25] > amov3[25] && amov3[25] > amov4[25] &&  amov4[25] > amov5[25] && amov5[25] < amov6[25] && amov6[25] < amov7[25] && amov7[25] < amov8[25] && amov8[25] < amov9[25]))
            {
-            if(amov1[15] < amov2[15] && amov2[15] < amov3[15] && amov3[15] < amov4[15] &&  amov4[15] < amov5[15] && amov5[15] > amov6[15] && amov6[15] > amov7[15] && amov7[15] > amov8[15] && amov8[15] > amov9[15])
+            if(amov1[25] < amov2[25] && amov2[25] < amov3[25] && amov3[25] < amov4[25] &&  amov4[25] < amov5[25] && amov5[25] > amov6[25] && amov6[25] > amov7[25] && amov7[25] > amov8[25] && amov8[25] > amov9[25])
               {
-               if((amov1[5] > amov2[5] && amov2[5] > amov3[5] && amov3[5] > amov4[5] &&  amov4[5] > amov5[5] && amov5[5] > amov6[5] && amov6[5] > amov7[5] && amov7[5] > amov8[5] && amov8[5] > amov9[5]))
+               if((amov1[15] > amov2[15] && amov2[15] > amov3[15] && amov3[15] > amov4[15] &&  amov4[15] > amov5[15] && amov5[15] > amov6[15] && amov6[15] > amov7[15] && amov7[15] > amov8[15] && amov8[15] > amov9[15])
+                  && (amov1[5] > amov2[5] && amov2[5] > amov3[5] && amov3[5] > amov4[5] &&  amov4[5] > amov5[5] && amov5[5] > amov6[5] && amov6[5] > amov7[5] && amov7[5] > amov8[5] && amov8[5] > amov9[5]))
                  {
                   myrequest.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzsell, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest.price);
                   OrderSend(myrequest,myresult);
@@ -164,9 +169,10 @@ void OnTick()
                  }
               }
             else
-               if(amov1[15] > amov2[15] && amov2[15] > amov3[15] && amov3[15] > amov4[15] &&  amov4[15] > amov5[15] && amov5[15] < amov6[15] && amov6[15] < amov7[15] && amov7[15] < amov8[15] && amov8[15] < amov9[15])
+               if(amov1[25] > amov2[25] && amov2[25] > amov3[25] && amov3[25] > amov4[25] &&  amov4[25] > amov5[25] && amov5[25] < amov6[25] && amov6[25] < amov7[25] && amov7[25] < amov8[25] && amov8[25] < amov9[25])
                  {
-                  if((amov1[5] < amov2[5] && amov2[5] < amov3[5] && amov3[5] < amov4[5] &&  amov4[5] < amov5[5] && amov5[5] < amov6[5] && amov6[5] < amov7[5] && amov7[5] < amov8[5] && amov8[5] < amov9[5]))
+                  if((amov1[15] < amov2[15] && amov2[15] < amov3[15] && amov3[15] < amov4[15] &&  amov4[15] < amov5[15] && amov5[15] < amov6[15] && amov6[15] < amov7[15] && amov7[15] < amov8[15] && amov8[1] < amov9[15])
+                     && (amov1[5] < amov2[5] && amov2[5] < amov3[5] && amov3[5] < amov4[5] &&  amov4[5] < amov5[5] && amov5[5] < amov6[5] && amov6[5] < amov7[5] && amov7[5] < amov8[5] && amov8[5] < amov9[5]))
                     {
                      myrequest1.volume = volumeGen(AccountInfoDouble(ACCOUNT_BALANCE), riskpercentage, iOpen(_Symbol,PERIOD_CURRENT,1), stopzbuy, SymbolInfoDouble(_Symbol,SYMBOL_TRADE_CONTRACT_SIZE), myrequest1.price);
                      OrderSend(myrequest1,myresult1);
@@ -225,13 +231,23 @@ void OnTick()
             if(dif>meristop)
               {
                CloseOrder();
+               buy=false;
+
               }
             else
               {
 
 
               }
+            if(Equity<(Balance-Limit))
+              {
+               CloseOrder();
+               buy=false;
 
+              }
+            else
+              {
+              }
 
             if(amov8[15]<amov5[15] && amov5[13]<amov8[13])
               {
@@ -261,12 +277,23 @@ void OnTick()
                  {
 
                   CloseOrder();
+                  sell=false;
+
                  }
                else
                  {
 
                  }
+               if(Equity<(Balance-Limit))
+                 {
 
+                  CloseOrder();
+                  sell=false;
+
+                 }
+               else
+                 {
+                 }
 
                if(amov8[15]>amov5[15] && amov5[13]>amov8[13])
                  {
@@ -371,4 +398,5 @@ double volumeGen(double accbalance, double riskperc, double openprice, double st
 
 
 
+//+------------------------------------------------------------------+
 //+------------------------------------------------------------------+
